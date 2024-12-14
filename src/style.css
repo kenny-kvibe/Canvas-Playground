@@ -27,7 +27,8 @@
 	z-index: 10;
 	user-select: none;
 	cursor: none;
-	border: 1px solid #0003;
+	border: 1px solid #00000030;
+	box-shadow: 0 0 6px -3px #000000C0;
 }
 #wrap #color-picker {
 	position: absolute;

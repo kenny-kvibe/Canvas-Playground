@@ -28,11 +28,43 @@ const initWindowEvents = (wrap, brush) => {
 		C: { code: 67, description: 'Set brush color' },
 		B: { code: 66, description: 'Set canvas background color' },
 	};
-	const keyEventLog = keyCode => {
-		const keyChar = String.fromCharCode(keyCode);
-		if (!(keyChar in keys)) return false;
-		console.log(`Event [${keyChar}] => ${keys[keyChar].description}`);
-		return true;
+	const binds = {
+		[keys.I.code]: evt => {
+			evt.preventDefault();
+			const keysInfo = Object.values(keys).map(key => `\t ${String.fromCharCode(key.code)}\t-\t${key.description}`).join('\n');
+			window.alert(`––[  Keys Bindings  ]--\n\n${keysInfo}\n\n`);
+		},
+		[keys.X.code]: evt => {
+			brush.drawStopEvent(evt);
+			brush.canvas.update();
+			brush.updateBrush();
+		},
+		[keys.S.code]: evt => {
+			evt.preventDefault();
+			const makeTransparent = window.confirm(`––[  Copy Canvas as Base64  ]--\n\nCanvas will be copied to clipboard as Base64 text.\nMake the background transparent ?\n\n`);
+			brush.canvas.base64ToClipboard('image/png', makeTransparent);
+		},
+		[keys.F.code]: evt => {
+			evt.preventDefault();
+			brush.isSquare = !brush.isSquare;
+			brush.setColor(brush.color);
+		},
+		[keys.C.code]: evt => {
+			evt.preventDefault();
+			showColorPicker(brush.color, brushColor => {
+				brush.drawStopEvent(evt);
+				brush.setColor(brushColor);
+			});
+		},
+		[keys.B.code]: evt => {
+			evt.preventDefault();
+			showColorPicker(brush.canvas.color, canvasColor => {
+				brush.drawStopEvent(evt);
+				brush.canvas.setColor(canvasColor);
+				brush.canvas.resize();
+				brush.updateBrush();
+			});
+		},
 	};
 	const showColorPicker = (rgbaColor, colorCallbackFn) => {
 		const colorPicker = document.createElement('input');
@@ -84,40 +116,9 @@ const initWindowEvents = (wrap, brush) => {
 		brush.updateBrush();
 	}, false);
 	window.addEventListener('keydown', evt => {
-		if (keyEventLog(evt.keyCode))
-			evt.preventDefault();
-		switch (evt.keyCode) {
-			case keys.I.code:
-				const keysInfo = Object.values(keys).map(key => `\t ${String.fromCharCode(key.code)}\t-\t${key.description}`).join('\n');
-				return window.alert(`––[  Keys Bindings  ]--\n\n${keysInfo}\n\n`);
-			case keys.X.code:
-				brush.drawStopEvent(evt);
-				brush.canvas.update();
-				return brush.updateBrush();
-			case keys.S.code:
-				const makeTransparent = window.confirm(`––[  Copy Canvas as Base64  ]--\n\nCanvas will be copied to clipboard as Base64 text.\nMake the background transparent ?\n\n`);
-				brush.canvas.base64ToClipboard('image/png', makeTransparent);
-				return;
-			case keys.F.code:
-				brush.isSquare = !brush.isSquare;
-				brush.setColor(brush.color);
-				return;
-			case keys.C.code:
-				showColorPicker(brush.color, brushColor => {
-					brush.drawStopEvent(evt);
-					brush.setColor(brushColor);
-				});
-				return;
-			case keys.B.code:
-				showColorPicker(brush.canvas.color, canvasColor => {
-					brush.drawStopEvent(evt);
-					brush.canvas.setColor(canvasColor);
-					brush.canvas.resize();
-					brush.updateBrush();
-				});
-				return;
-			default: return;
-		}
+		const keyCode = evt.keyCode;
+		if (keyCode in binds)
+			binds[keyCode](evt);
 	}, false);
 };
 

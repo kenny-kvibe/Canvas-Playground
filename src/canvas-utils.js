@@ -32,8 +32,9 @@ class Canvas {
 	setColor = function (rgbaColor) {
 		if (rgbaColor.length != 4) return;
 		this.color = [window.parseInt(rgbaColor[0]), window.parseInt(rgbaColor[1]), window.parseInt(rgbaColor[2]), window.parseFloat(rgbaColor[3])];
-		this.element.style.backgroundColor = `rgba(${this.color.join(',')})`;
-		this.cache.ctx.fillStyle = `rgba(${this.color.join(',')})`;
+		const rgba = `rgba(${this.color.join(',')})`;
+		this.cache.ctx.fillStyle = rgba;
+		this.element.style.backgroundColor = rgba;
 	};
 	resize = function () {
 		this.cache.element.width = this.element.clientWidth;
